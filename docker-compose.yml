@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+    mysql:
+        build: ./db
+        command: "--innodb_use_native_aio=0"
+        volumes:
+            - ${DB_PATH_HOST}:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: asd123
+
+    adminer:
+        image: adminer
+        ports:
+            - "8080:8080"
+
+    composer:
+        image: composer
+        volumes:
+            - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+        working_dir: ${APP_PATH_CONTAINER}
+        command: composer install
+
+    proxy:
+        image: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+            
+    webserver:
+        build: ./project
+        volumes:
+            - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+        working_dir: ${APP_PATH_CONTAINER}
+        # command: sed -i "s%/var/www/html%/var/www/html/public%g" "/etc/apache2/sites-enabled/000-default.conf"
