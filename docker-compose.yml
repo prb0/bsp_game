@@ -34,4 +34,3 @@ services:
         volumes:
             - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
         working_dir: ${APP_PATH_CONTAINER}
-        # command: sed -i "s%/var/www/html%/var/www/html/public%g" "/etc/apache2/sites-enabled/000-default.conf"
