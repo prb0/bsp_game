@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход на сайт{% endblock %}
+
+{% block body %}
+
+<article id="top" class="wrapper style1">
+    <div class="container">
+        <div class="row">
+            <div class="col-4-md col-6-sm col-12-xs center-block">
+                    {% if isUser %}
+                        <h1>Вы уже авторизованы</h1>
+                        <a href="{{ path('logout') }}">Выйти</a>
+                    {% else %}
+                        {% if error %}
+                            <span class="error">{{ error.messageKey }}</span>
+                        {% endif %}
+                        <h1>Вход на сайт</h1>
+                        <form action="{{ path('login') }}" method="POST">
+                            <input type="text" name="_username" value="{{ last_username }}" placeholder="Логин" />
+                            <input type="password" name="_password" placeholder="Пароль" />
+                            <button class="regbutt" type="submit">Войти</button>
+                        </form>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}

@@ -1,0 +1,12 @@
+form input {
+    margin-bottom: 15px;
+    outline: none;
+}
+
+.center-block {
+    margin: 0 auto;
+}
+
+.regbutt {
+    width: 100%;
+}

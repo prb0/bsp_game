@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Игра{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .icon.featured,
+        .game section {
+            cursor: pointer;
+        }
+        .game section {
+            box-sizing: border-box;
+            border: 2px solid transparent;
+        }
+        .game .hoverborder:hover {
+            border: 2px solid gray;
+            box-sizing: border-box;
+        }
+        .game > div {
+            transition: 0.5s;
+        }
+        article {
+            height: 100vh;
+        }
+        ._hide {
+            opacity: 0.2;
+            transition: 0.5s;
+        }
+        span, h3 {
+            transition: 0.5s;
+        }
+        ._gb {
+            cursor: default;
+        }
+        #game {
+            display: none;
+        }
+        #search {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <article id="work" class="wrapper style2">
+        <div class="container">
+            <div class="row aln-center" id="search">
+                <h2>Идёт поиск...</h2>
+            </div>
+            <div id="game">
+                <h2 id="gamenotify">Игра началась!</h2>
+                <h3 id="waiting">Сделайте свой выбор</h3>
+                <div class="row aln-center game">
+                    <div class="col-4 col-6-medium col-12-small gameblock _gb">
+                        <section class="box style1 hoverborder">
+                            <span class="icon featured fa-comments-o"></span>
+                            <h3>Камень</h3>
+                        </section>
+                    </div>
+                    <div class="col-4 col-6-medium col-12-small gameblock _gb">
+                        <section class="box style1 hoverborder">
+                            <span class="icon featured fa-camera-retro"></span>
+                            <h3>Ножницы</h3>
+                        </section>
+                    </div>
+                    <div class="col-4 col-6-medium col-12-small gameblock _gb">
+                        <section class="box style1 hoverborder">
+                            <span class="icon featured fa-thumbs-o-up"></span>
+                            <h3>Бумага</h3>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <footer id="starter">
+                <h2>Начни поиск соперника!</h2>
+                <a href="return:false;" class="button large scrolly" id="find">Найти</a>
+            </footer>
+        </div>
+    </article>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $('.hoverborder').on('click', function() {
+                var choosen = '';
+                $(this).parent().removeClass('gameblock');
+                $('.hoverborder').each(function(key, val) {
+                    if ($(val).parent().hasClass('gameblock')) {
+                        $(val).parent().find('span, h3').addClass('_hide');
+                    } else {
+                        choosen = $(val).find('h3').html();
+                    }
+                });
+                var blocks = $('.hoverborder, .icon.featured, body');
+                blocks.removeClass('hoverborder');
+                blocks.css('cursor', 'wait');
+                $('._gb').css('cursor', 'wait');
+                $('#gamenotify').html('Выбор сделан!');
+                $('#waiting').html('Ожидаем результат!');
+                $.ajax({
+                    url: "{{path('gameexecute')}}",
+                    method: 'POST',
+                    data: 'choosen=' + choosen,
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    complete: function() {
+                        $('#game').hide(500);
+                        setTimeout(function() {
+                            $('._gb > section').addClass('hoverborder');
+                            blocks.css('cursor', 'pointer');
+                            $('._gb').css('cursor', 'default');
+                            $('#gamenotify').html('Игра началась');
+                            $('#waiting').html('Сделайте свой выбор');
+                            $('.hoverborder').find('span, h3').removeClass('_hide');
+                            $('.hoverborder').parent().addClass('gameblock');
+                            $('#starter').show(500);
+                        }, 400);
+                        
+                    }
+                });
+            });
+
+            $('#find').on('click', function() {
+                var block = $(this);
+                $.ajax({
+                    url: '{{path("findenemy")}}',
+                    method: 'POST',
+                    beforeSend: function() {
+                        $('body').css('cursor', 'wait');
+                        block.parent().hide(500);
+                        setTimeout(function() {
+                            $('#search').show(500);
+                        }, 400);
+                    },
+                    success: function() {
+                        $('#search').hide(500);
+                        setTimeout(function() {
+                            $('#game').show(500);
+                        }, 400);
+                    },
+                    complete: function() {
+                        $('body').css('cursor', 'default');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
