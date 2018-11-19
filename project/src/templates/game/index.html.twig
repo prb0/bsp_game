@@ -3,6 +3,8 @@
 {% block title %}Игра{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
         .icon.featured,
         .game section {
@@ -38,6 +40,22 @@
         #search {
             display: none;
         }
+        .white-popup {
+            position: relative;
+            background: #FFF;
+            padding: 35px;
+            width: auto;
+            max-width: 500px;
+            height: 250px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .open-popup-link {
+            display: none;
+        }
+        button.mfp-close, button.mfp-arrow {
+            background: black;
+        }
     </style>
 {% endblock %}
 
@@ -48,24 +66,24 @@
                 <h2>Идёт поиск...</h2>
             </div>
             <div id="game">
-                <h2 id="gamenotify">Игра началась!</h2>
+                <h2 id="gamenotify">Противник найден!</h2>
                 <h3 id="waiting">Сделайте свой выбор</h3>
                 <div class="row aln-center game">
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
                         <section class="box style1 hoverborder">
-                            <span class="icon featured fa-comments-o"></span>
+                            <span class="icon featured fa-hand-rock"></span>
                             <h3>Камень</h3>
                         </section>
                     </div>
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
                         <section class="box style1 hoverborder">
-                            <span class="icon featured fa-camera-retro"></span>
+                            <span class="icon featured fa-angellist"></span>
                             <h3>Ножницы</h3>
                         </section>
                     </div>
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
                         <section class="box style1 hoverborder">
-                            <span class="icon featured fa-thumbs-o-up"></span>
+                            <span class="icon featured fa-hand-paper-o"></span>
                             <h3>Бумага</h3>
                         </section>
                     </div>
@@ -77,9 +95,16 @@
             </footer>
         </div>
     </article>
+    <div id="popup" class="white-popup mfp-hide">
+        <h3>У соперника <span id="opponent"></span></h3>
+        <p id="notification"></p>
+        <p>Бонусы: <span id="bonusmessage"></span></p>
+    </div>
+    <a href="#popup" class="open-popup-link">Show inline popup</a>
 {% endblock %}
 
 {% block javascripts %}
+    <script src="/assets/js/jquery.magnific-popup.js"></script>
     <script>
         $(document).ready(function() {
             $('.hoverborder').on('click', function() {
@@ -97,13 +122,17 @@
                 blocks.css('cursor', 'wait');
                 $('._gb').css('cursor', 'wait');
                 $('#gamenotify').html('Выбор сделан!');
-                $('#waiting').html('Ожидаем результат!');
+                $('#waiting').html('Ожидаем хода противника!');
                 $.ajax({
                     url: "{{path('gameexecute')}}",
                     method: 'POST',
                     data: 'choosen=' + choosen,
                     success: function(response) {
                         console.log(response);
+                        $('.open-popup-link').trigger('click');
+                        $('#opponent').html(response.opponent);
+                        $('#notification').html(response.message);
+                        $('#bonusmessage').html(response.bonus);
                     },
                     complete: function() {
                         $('#game').hide(500);
@@ -111,7 +140,7 @@
                             $('._gb > section').addClass('hoverborder');
                             blocks.css('cursor', 'pointer');
                             $('._gb').css('cursor', 'default');
-                            $('#gamenotify').html('Игра началась');
+                            $('#gamenotify').html('Противник найден!');
                             $('#waiting').html('Сделайте свой выбор');
                             $('.hoverborder').find('span, h3').removeClass('_hide');
                             $('.hoverborder').parent().addClass('gameblock');
@@ -144,6 +173,10 @@
                         $('body').css('cursor', 'default');
                     }
                 });
+            });
+            $('.open-popup-link').magnificPopup({
+                type:'inline',
+                midClick: true
             });
         });
     </script>

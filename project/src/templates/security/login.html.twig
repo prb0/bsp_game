@@ -2,6 +2,14 @@
 
 {% block title %}Вход на сайт{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        p {
+            font-size: 1em!important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 
 <article id="top" class="wrapper style1">
@@ -16,6 +24,7 @@
                             <span class="error">{{ error.messageKey }}</span>
                         {% endif %}
                         <h1>Вход на сайт</h1>
+                        <p>Нет аккаунта? <a href="{{ path('regpage') }}">регистрируйся!</a></p>
                         <form action="{{ path('login') }}" method="POST">
                             <input type="text" name="_username" value="{{ last_username }}" placeholder="Логин" />
                             <input type="password" name="_password" placeholder="Пароль" />
