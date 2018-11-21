@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
         .icon.featured,
-        .game section {
+        .game button {
             cursor: pointer;
+            display: block;
+            width: 100%;
         }
-        .game section {
+        .game button {
             box-sizing: border-box;
             border: 2px solid transparent;
         }
@@ -56,36 +58,67 @@
         button.mfp-close, button.mfp-arrow {
             background: black;
         }
+        .oppinfo {
+            display: flex;
+            flex-direction: row;
+            margin: 0 auto;
+            margin-bottom: 30px;
+            width: 300px;
+        }
+        .ophoto {
+            max-width: 100%;
+            width: 100px;
+            height: 100px;
+        }
+        .oppname {
+            font-size: 1.2em;
+            margin-left: 30px;
+        }
+        .points {
+            text-align: left;
+            margin: 0;
+            font-weight: 700;
+            color: black;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <article id="work" class="wrapper style2">
         <div class="container">
+            <div class="points">Ваши бонусы: <span id="pointfield">{{ points }}</span></div>
             <div class="row aln-center" id="search">
                 <h2>Идёт поиск...</h2>
+                <h3><span id="timer">1</span> ...</h3>
             </div>
             <div id="game">
                 <h2 id="gamenotify">Противник найден!</h2>
+
+                <div class="oppinfo">
+                    <img src="/images/1.jpg" class="ophoto">
+                    <a href="#" class="oppname">Вася Петров</a>
+                </div>
+
                 <h3 id="waiting">Сделайте свой выбор</h3>
+                <h4>У вас осталось <span id="timer2">10</span> секунд</h4>
                 <div class="row aln-center game">
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
-                        <section class="box style1 hoverborder">
+                        <button class="box style1 hoverborder">
                             <span class="icon featured fa-hand-rock"></span>
                             <h3>Камень</h3>
-                        </section>
+                        </button>
                     </div>
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
-                        <section class="box style1 hoverborder">
+                        <button class="box style1 hoverborder">
                             <span class="icon featured fa-angellist"></span>
                             <h3>Ножницы</h3>
-                        </section>
+                        </button>
                     </div>
                     <div class="col-4 col-6-medium col-12-small gameblock _gb">
-                        <section class="box style1 hoverborder">
+                        <button class="box style1 hoverborder">
                             <span class="icon featured fa-hand-paper-o"></span>
                             <h3>Бумага</h3>
-                        </section>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -98,7 +131,7 @@
     <div id="popup" class="white-popup mfp-hide">
         <h3>У соперника <span id="opponent"></span></h3>
         <p id="notification"></p>
-        <p>Бонусы: <span id="bonusmessage"></span></p>
+        <p>Ваши бонусы: <span id="bonusmessage"></span></p>
     </div>
     <a href="#popup" class="open-popup-link">Show inline popup</a>
 {% endblock %}
@@ -107,7 +140,12 @@
     <script src="/assets/js/jquery.magnific-popup.js"></script>
     <script>
         $(document).ready(function() {
-            $('.hoverborder').on('click', function() {
+            var interval = 0;
+            var interval2 = 0;
+            var seconds = 1;
+            var seconds2 = 10;
+
+            $('._gb button').on('click', function() {
                 var choosen = '';
                 $(this).parent().removeClass('gameblock');
                 $('.hoverborder').each(function(key, val) {
@@ -127,17 +165,22 @@
                     url: "{{path('gameexecute')}}",
                     method: 'POST',
                     data: 'choosen=' + choosen,
+                    beforeSend: function() {
+                        clearInterval(interval2);
+                        $('button').prop('disabled', true);
+                    },
                     success: function(response) {
                         console.log(response);
                         $('.open-popup-link').trigger('click');
                         $('#opponent').html(response.opponent);
                         $('#notification').html(response.message);
                         $('#bonusmessage').html(response.bonus);
+                        $('#pointfield').html(response.bonus);
                     },
                     complete: function() {
                         $('#game').hide(500);
                         setTimeout(function() {
-                            $('._gb > section').addClass('hoverborder');
+                            $('._gb > button').addClass('hoverborder');
                             blocks.css('cursor', 'pointer');
                             $('._gb').css('cursor', 'default');
                             $('#gamenotify').html('Противник найден!');
@@ -145,6 +188,9 @@
                             $('.hoverborder').find('span, h3').removeClass('_hide');
                             $('.hoverborder').parent().addClass('gameblock');
                             $('#starter').show(500);
+                            seconds2 = 10;
+                            $('#timer2').html('10');
+                            $('button').prop('disabled', false);
                         }, 400);
                         
                     }
@@ -152,6 +198,8 @@
             });
 
             $('#find').on('click', function() {
+                seconds = 1;
+                seconds2 = 10;
                 var block = $(this);
                 $.ajax({
                     url: '{{path("findenemy")}}',
@@ -161,16 +209,28 @@
                         block.parent().hide(500);
                         setTimeout(function() {
                             $('#search').show(500);
+                            interval = setInterval(function() {
+                                $('#timer').html(++seconds);
+                            }, 1000);
                         }, 400);
                     },
                     success: function() {
                         $('#search').hide(500);
                         setTimeout(function() {
                             $('#game').show(500);
+                            interval2 = setInterval(function() {
+                                if (seconds2 < 2) {
+                                    clearInterval(interval2);
+                                    $($('.hoverborder')[(Math.floor(Math.random() * (0 - 3)) + 3)]).trigger('click');
+                                }
+                                $('#timer2').html(--seconds2);
+                            }, 1000);
                         }, 400);
                     },
                     complete: function() {
                         $('body').css('cursor', 'default');
+                        clearInterval(interval);
+                        $('#timer').html(1);
                     }
                 });
             });
