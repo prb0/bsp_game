@@ -24,8 +24,13 @@ class GameController extends AbstractController
      */
     public function findenemy()
     {
-        sleep(random_int(1, 2));
-        return $this->json(['success' => true]);
+        $players = json_decode(file_get_contents(__DIR__ . '/../../fake_players.json'), true);
+        
+        $playerKey = 'player' . random_int(1, count($players));
+
+        $opponent = $players[$playerKey];
+
+        return $this->json(['success' => true, 'opponent' => $opponent]);
     }
 
     /**

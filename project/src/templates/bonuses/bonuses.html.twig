@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ваши бонусы{% endblock %}
+
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <style>
+        form input {
+            margin-bottom: 15px;
+            outline: none;
+        }
+        
+        .center-block {
+            margin: 0 auto;
+        }
+        
+        .regbutt {
+            width: 100%;
+        }
+        .white-popup {
+            position: relative;
+            background: #FFF;
+            padding: 50px;
+            width: auto;
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .white-popup a {
+            margin: 0 auto;
+            margin-top: 30px;
+            display: block;
+            text-align: center;
+        }
+        .open-popup-link {
+            display: none;
+        }
+        button.mfp-close, button.mfp-arrow {
+            background: black;
+        }
+        .style1 span::before {
+            font-size: 3.5em;
+        }
+        article {
+            height: 100vh;
+        }
+        .points {
+            text-align: left;
+            margin: 0;
+            font-weight: 700;
+            color: black;
+        }
+        form {
+            width: 300px;
+            margin-top: 15px;
+            margin-bottom: 50px;
+        }
+        form input,
+        form button {
+            width: 100%;
+        }
+        .formblock {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .box {
+            border: 2px solid transparent;
+            border-radius: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<article id="work" class="wrapper style2">
+    <div class="container">
+        <div class="row aln-center">
+            <div class="col-4 col-6-medium col-12-small points">Ваши бонусы: <span id="pointfield">{{ points }}</span></div>
+            <div class="col-4 col-6-medium col-12-small">
+                <div class="formblock">
+                    <h3 class="points">Вывод средств</h3>
+                    <form onsubmit="return false;">
+                        <input type="text" placeholder="Сумма" value="{{ points }}">
+                        <button id="cashform">Снять</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-4 col-6-medium col-12-small"></div>
+        </div>
+
+        <h2>Внесение средств</h2>
+        <div class="row aln-center">
+            <div class="col-4 col-6-medium col-12-small">
+                <section class="box style1">
+                    <span class="icon fa-credit-card"></span>
+                    <h3>100р</h3>
+                    <a href="#" class="button">Внести</a>
+                </section>
+            </div>
+            <div class="col-4 col-6-medium col-12-small">
+                <section class="box style1">
+                    <span class="icon fa-credit-card"></span>
+                    <h3>500р</h3>
+                    <a href="#" class="button">Внести</a>
+                </section>
+            </div>
+            <div class="col-4 col-6-medium col-12-small">
+                <section class="box style1">
+                    <span class="icon fa-credit-card"></span>
+                    <h3>1000р</h3>
+                    <a href="#" class="button">Внести</a>
+                </section>
+            </div>
+        </div>
+    </div>
+</article>
+<div id="popup" class="white-popup mfp-hide">
+    <h3>Снимать деньги можно только на тот счет с которого вы пополняли баланс</h3>
+    <a href="return:false;" class="button closer">Пополнить</a>
+</div>
+<a href="#popup" class="open-popup-link">Show inline popup</a>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/assets/js/jquery.magnific-popup.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#cashform').on('click', function() {
+                setTimeout(function() {
+                    $('.open-popup-link').trigger('click');
+                    $('.box').css('border', '2px solid green');
+                }, 500);
+            });
+            $('.open-popup-link').magnificPopup({
+                type:'inline',
+                midClick: true
+            });
+            $('.closer').on('click', function() {
+                $('.mfp-close').trigger('click');
+            });
+        });
+    </script>
+{% endblock %}

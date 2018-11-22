@@ -30,3 +30,4 @@ security:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/regpage, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/game, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/bonuses, roles: IS_AUTHENTICATED_FULLY }

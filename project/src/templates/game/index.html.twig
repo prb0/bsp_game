@@ -42,22 +42,6 @@
         #search {
             display: none;
         }
-        .white-popup {
-            position: relative;
-            background: #FFF;
-            padding: 35px;
-            width: auto;
-            max-width: 500px;
-            height: 250px;
-            margin: 20px auto;
-            border-radius: 10px;
-        }
-        .open-popup-link {
-            display: none;
-        }
-        button.mfp-close, button.mfp-arrow {
-            background: black;
-        }
         .oppinfo {
             display: flex;
             flex-direction: row;
@@ -79,6 +63,34 @@
             margin: 0;
             font-weight: 700;
             color: black;
+        }
+        form input {
+            margin-bottom: 15px;
+            outline: none;
+        }
+        
+        .center-block {
+            margin: 0 auto;
+        }
+        
+        .regbutt {
+            width: 100%;
+        }
+        .white-popup {
+            position: relative;
+            background: #FFF;
+            padding: 35px;
+            width: auto;
+            max-width: 500px;
+            height: 250px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        .open-popup-link {
+            display: none;
+        }
+        button.mfp-close, button.mfp-arrow {
+            background: black;
         }
     </style>
 {% endblock %}
@@ -214,7 +226,10 @@
                             }, 1000);
                         }, 400);
                     },
-                    success: function() {
+                    success: function(data) {
+                        $('.oppname').html(data.opponent.name);
+                        $('.oppname').attr('href', data.opponent.link);
+                        $('.ophoto').attr('src', data.opponent.photo);
                         $('#search').hide(500);
                         setTimeout(function() {
                             $('#game').show(500);
